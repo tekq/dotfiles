@@ -53,7 +53,7 @@ devices: (
             mode: "OnRelease";
             action = {
               type: "Keypress";
-              keys: [ "KEY_LEFTMETA",  "KEY_A" ];
+              keys: [ "KEY_LEFTMETA" ];
             }
           },
           {
@@ -61,7 +61,7 @@ devices: (
             mode: "OnRelease";
             action = {
               type: "Keypress";
-              keys: [ "KEY_LEFTCTRL", "KEY_A" ];
+              keys: [ "KEY_LEFTMETA", "KEY_Q" ];
             },
           }
         );
