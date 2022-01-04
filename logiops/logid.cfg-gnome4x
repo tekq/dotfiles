@@ -1,9 +1,10 @@
-devices: ({
+devices: (
+{
   name: "Wireless Mouse MX Master 3";
 
   smartshift: {
     on: false;
-    threshold: 5;
+    threshold: 7;
   };
 
   hiresscroll: {
@@ -60,11 +61,34 @@ devices: ({
             mode: "OnRelease";
             action = {
               type: "Keypress";
-              keys: [ "KEY_LEFTCTRL", "KEY_LEFTALT", "KEY_D" ];
+              keys: [ "KEY_LEFTMETA", "KEY_Q" ];
             },
           }
         );
       };
     }
-  );
-});
+);
+},
+{
+name: "MX Keys Wireless Keyboard";
+buttons: (
+        {
+            cid: 0x00c7;
+            action =
+            {
+                type: "Keypress";
+                keys: ["KEY_BRIGHTNESSDOWN"];
+            };
+        },
+        {
+            cid: 0x00c8;
+            action =
+            {
+                type: "Keypress";
+                keys: ["KEY_BRIGHTNESSUP"];
+            };
+        }
+    );
+
+}
+);
