@@ -10,14 +10,21 @@
       ./hardware-configuration.nix
     ];
 
-    # Use the systemd-boot EFI boot loader.
+  # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.supportedFilesystems = [ "btrfs" "vmd" ];
-  #boot.initrd.availableKernelModules = [ "vmd" ];
 
-  networking.hostName = "nixos"; # Define your hostname.
+  # Configuration options for LUKS Device
+  boot.initrd.luks.devices = {
+    crypted = {
+      device = "/dev/disk/by-partuuid/d04a28cf-d92b-b14e-ab89-8c4ff0def964";
+      allowDiscards = true; # Used if primary device is a SSD
+      preLVM = true;
+    };
+  };
+
+
+  networking.hostName = "lithium"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Set your time zone.
@@ -26,15 +33,20 @@
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
-  networking.useDHCP = false;
+  #networking.useDHCP = false;
   networking.interfaces.wlo1.useDHCP = true;
+
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
+  # i18n.defaultLocale = "en_US.UTF-8";
   # console = {
   #   font = "Lat2-Terminus16";
   #   keyMap = "us";
@@ -43,11 +55,20 @@
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
+  # GPU Drivers
+  
+  ## Nvidia
+  # services.xserver.videoDrivers = [ "nvidia" ];
+
+
+
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
-  
+  services.gnome.core-utilities.enable = false;
+
+
   # Configure keymap in X11
   # services.xserver.layout = "us";
   # services.xserver.xkbOptions = "eurosign:e";
@@ -55,12 +76,27 @@
   # Enable CUPS to print documents.
   # services.printing.enable = true;
 
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
+
+  # Enable PipeWire
+  hardware.pulseaudio.enable = false; 
+
+  # rtkit is optional but recommended
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    # If you want to use JACK applications, uncomment this
+    # jack.enable = true;
+  };
+
 
   # Enable touchpad support (enabled default in most desktopManager).
   services.xserver.libinput.enable = true;
+
+   virtualisation.virtualbox.host.enable = true;
+   users.extraGroups.vboxusers.members = [ "vlad" ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.vlad = {
@@ -71,22 +107,18 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    wget
+    firefox
     discord
-    brave
-    fish
+    spotify
     steam
-    flatpak
-    qbittorrent
-    git
-    neofetch
-    solaar
-  ];
-  
-  # Allow non-free Packages
-  nixpkgs.config = {
-    allowUnfree = true;
-  };
+    jetbrains.pycharm-professional
+    jetbrains.idea-ultimate
+    jetbrains.clion
+    gnome.gnome-screenshot
+   ];
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -96,9 +128,6 @@
   # };
 
   # List services that you want to enable:
-  # Enable Bluetooth
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
@@ -108,14 +137,14 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-  services.flatpak.enable = true;
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "21.05"; # Did you read the comment?
+  system.stateVersion = "21.11"; # Did you read the comment?
 
 }
 
